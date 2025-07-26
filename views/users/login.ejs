@@ -1,0 +1,20 @@
+<% layout("layouts/boilerplate")%> 
+ <div class="row">
+    <h1 class="col-6 offset-3">Log In on Rentozo</h1>
+        <div class="col-6 offset-3">
+            <form action="/login" method="post">
+
+               <div class="mb-3">
+            <label for="username" class="form-label">Username</label>
+            <input type="text" name="username" id="username" placeholder="Enter username" class="form-control" required>
+               </div>
+
+               <div class="mb-3">
+            <label for="password" class="form-label">Password</label>
+            <input type="password" name="password" id="password" placeholder="enter password" class="form-control" required>
+               </div>
+
+               <button class="btn btn-success">Log in</button>
+            </form>
+        </div>
+ </div>    

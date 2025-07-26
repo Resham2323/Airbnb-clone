@@ -1,0 +1,47 @@
+<% layout("layouts/boilerplate")%>
+<body>
+    <div class="row">
+            <div class="col-8 offset-2"><br><br>
+    <h1>Create new Listing</h1>
+    <form method="POST" action="/listings" novalidate class="needs-validation" enctype="multipart/form-data">
+        
+        <div class="mb-3">
+             <label for="title" class="form-label">Title</label>
+        <input type="text" name="listing[title]" id="title" placeholder="Add catchy title" class="form-control" required>
+        <div class="invalid-feedback">Title must required</div>
+        </div>
+        <div class="mb-3">
+            <label for="description" class="form-label">description</label>
+            <textarea name="listing[description]" id="description" placeholder="Enter description" class="form-control" required></textarea>
+                <div class="invalid-feedback">Title must be required</div>
+        </div>
+       
+        <div class="mb-3"> 
+        <label for="image" class="form-label">Upload image</label>
+         <input type="file" name="listing[image]" id="image" placeholder="Enter image URL/link" class="form-control" >
+        </div>
+
+        <div class="row">
+            <div class="mb-3 col-md-4">
+             <label for="price" class="form-label">Price</label>
+             <input type="" name="listing[price]" id="price" placeholder="1200" class="form-control" required>
+            <div class="invalid-feedback">Price must be valid</div>
+
+        </div>
+           <div class="mb-3 col-md-8">
+             <label for="country" class="form-label">Country</label>
+             <input type="text" name="listing[country]" id="country" placeholder="India" class="form-control" required>
+                     <div class="invalid-feedback">country name should be valid</div>
+           </div>
+        </div>
+           <div class="mb-3 ">
+              <label for="location" class="form-label">Location</label>
+             <input type="text" name="listing[location]" id="location" placeholder="Rajasthan" class="form-control" required>
+                     <div class="invalid-feedback">location should be valid</div>
+          </div>
+            <button class="btn btn-dark add-btn mb-3 ">Add</button>
+           
+    </form>
+     </div>
+    </div>
+</body>

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Leaflet Map</title>
+
+  <!-- Leaflet CSS -->
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"
+  />
+</head>
+<body>
+  
+    <div id="map" class="col-8 offset-3"></div>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+
+  <!-- Your Map Script -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const map = L.map('map').setView([28.6139, 77.2088], 13);
+
+      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '© OpenStreetMap',
+      }).addTo(map);
+
+const marker = L.marker([28.6139, 77.2090]).addTo(map);    
+// const circle = L.circle([28.6139, 77.2090], {
+//   radius: 2000,
+//   color: "coral",
+//   fillColor: "coral",
+//   fillOpacity: 0.3,     // This ensures it’s visibly filled
+//   weight: 2   
+// }).addTo(map);
+    });
+  </script>
+</body>
+</html>
