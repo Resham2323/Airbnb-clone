@@ -23,6 +23,7 @@ document.addEventListener("DOMContentLoaded", function () {
   form.addEventListener("submit", function (e) {
     const lat = document.getElementById("latitude").value;
     const lon = document.getElementById("longitude").value;
+    console.log("Submitting lat/lon:", lat, lon);
     if (!lat || !lon) {
       e.preventDefault();
       alert("Please select a location from the suggestions so coordinates can be set.");
