@@ -27,30 +27,43 @@ module.exports.showListing = async(req, res) => {
       }
 
 module.exports.createListing = async (req, res, next) => {
-   const { latitude, longitude } = req.body;
-   console.log(latitude, longitude);
-   console.log(location.properties);
-   console.log(coordinates);
-  let url = req.file.path;
-    console.log(url);
-  let filename = req.file.filename;
-              let newListing = new Listing(req.body.listing);
-              newListing.owner = req.user._id;
-              newListing.image = {url, filename};
-                // If coordinates exist, add geometry
-       if(latitude && longitude) {
-          newListing.geometry = {
-          type: "Point",
-          coordinates: [parseFloat(longitude), parseFloat(latitude)]
-        };
-       }
-            
-              await newListing.save();
-              console.log(newListing);
-              req.flash("success", "New Listing Created");
-              res.redirect("/listings");
-        }
-        
+
+  console.log("Payload:", req.body.listing);
+  const { latitude, longitude } = req.body.listing;
+
+  // Ensure these are present
+  if (!latitude || !longitude) {
+    req.flash("error", "Coordinates missing. Please select a location.");
+    return res.redirect("/listings/new");
+  }
+
+  const lat = parseFloat(latitude);
+  const lon = parseFloat(longitude);
+
+  if (isNaN(lat) || isNaN(lon)) {
+    req.flash("error", "Invalid coordinates. Try selecting the location again.");
+    return res.redirect("/listings/new");
+  }
+
+  const newListing = new Listing(req.body.listing);
+  newListing.owner = req.user._id;
+  newListing.image = {
+    url: req.file.path,
+    filename: req.file.filename,
+  };
+  newListing.geometry = {
+    type: "Point",
+    coordinates: [lon, lat],
+  };
+
+  try {
+    await newListing.save();
+    req.flash("success", "New Listing Created");
+    res.redirect("/listings");
+  } catch (e) {
+    next(e);
+  }
+}
 
 
 
@@ -67,6 +80,8 @@ module.exports.editListing = async(req, res) => {
 
            res.render("listings/edit.ejs", {listing, ogImgUrl});
       }
+
+
 module.exports.updateListing = async(req, res) => {
   if(!req.body.listing) {
     throw new ExpressError(400, "Please send valid data for listings");

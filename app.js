@@ -16,6 +16,7 @@ const userRouter = require("./routes/user.js")
 const session = require("express-session");
 const flash = require("connect-flash");
 const User = require("./models/user.js");
+const multer = require('multer');
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
 
@@ -48,6 +49,7 @@ const sessionOptions = {
         httpOnly:true,
     }
 };
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.use(session(sessionOptions));
 app.use(flash());
@@ -72,6 +74,16 @@ app.use((req, res, next) => {
 app.use("/listings", listingRouter);
 app.use("/listings/:id/reviews", reviewRouter);
 app.use("/", userRouter);
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, path.join(__dirname, 'uploads')),
+  filename: (req, file, cb) => {
+    const unique = Date.now() + '-' + file.originalname;
+    cb(null, unique);
+  }
+});
+const upload = multer({ storage });
+
 
 app.all('/{*splat}', (req, res, next) => {
     next(new ExpressError( 404 ,"Page not found "))

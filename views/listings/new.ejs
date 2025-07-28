@@ -39,9 +39,16 @@
              <input type="text" name="listing[location]" id="location" placeholder="Rajasthan" class="form-control" required>
                      <div class="invalid-feedback">location should be valid</div>
           </div>
+          <!-- Hidden inputs to capture coordinates -->
+            <input type="hidden" name="listing[latitude]" value="28.6139">
+       <input type="hidden" name="listing[longitude]" value="77.2090">
+
+            <p id="selectedLocation" class="text-muted mb-2"></p>
+
             <button class="btn btn-dark add-btn mb-3 ">Add</button>
            
     </form>
      </div>
     </div>
+    <script src="/js/map.js"></script>
 </body>
