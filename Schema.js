@@ -8,8 +8,8 @@ module.exports.listingSchema = Joi.object({
         location: Joi.string().required(),
         country: Joi.string().required(),
         image: Joi.string().allow("",null),
-        latitude:Joi.number().optional(),
-        longitude:Joi.number().optional(),
+       latitude: Joi.number().allow(null, '').optional(),
+      longitude: Joi.number().allow(null, '').optional(),
     }).required(),
 });
 

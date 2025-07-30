@@ -1,4 +1,7 @@
 {
+  "engines": {
+    "node": "22.14.0"
+  },
   "name": "air-bnb",
   "version": "1.0.0",
   "main": "index.js",
@@ -10,8 +13,10 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "axios": "^1.11.0",
     "cloudinary": "^2.7.0",
     "connect-flash": "^0.1.1",
+    "connect-mongo": "^5.1.0",
     "dotenv": "^17.2.0",
     "ejs": "^3.1.10",
     "ejs-mate": "^4.0.0",

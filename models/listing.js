@@ -38,16 +38,18 @@ const listingSchema = new Schema({
         type:Schema.Types.ObjectId,
         ref:"User"
     },
-       geometry: {
+    geometry: {
     type: {
-      type: String, // 'Point'
-      enum: ["Point"],
+      type: String,
+      enum: ['Point'],   // GeoJSON type
+      required: true
     },
     coordinates: {
-      type: [Number], // [longitude, latitude]
-      optional:true,
+      type: [Number],    // [longitude, latitude]
+      required: true
     }
   }
+
   },
 
 );

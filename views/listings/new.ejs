@@ -1,4 +1,9 @@
 <% layout("layouts/boilerplate")%>
+<script src="https://unpkg.com/@geoapify/geocoder-autocomplete@1.2.0"></script>
+<script>
+    const MAP_TOKEN = "<%=process.env.MAP_TOKEN%>";
+    console.log("Geoapify MAP_TOKEN =>", MAP_TOKEN);
+</script>
 <body>
     <div class="row">
             <div class="col-8 offset-2"><br><br>
@@ -18,13 +23,13 @@
        
         <div class="mb-3"> 
         <label for="image" class="form-label">Upload image</label>
-         <input type="file" name="listing[image]" id="image" placeholder="Enter image URL/link" class="form-control" >
+         <input type="file" name="image" id="image" placeholder="Enter image URL/link" class="form-control" >
         </div>
 
         <div class="row">
             <div class="mb-3 col-md-4">
              <label for="price" class="form-label">Price</label>
-             <input type="" name="listing[price]" id="price" placeholder="1200" class="form-control" required>
+             <input type="number" name="listing[price]" id="price" placeholder="1200" class="form-control" required>
             <div class="invalid-feedback">Price must be valid</div>
 
         </div>
@@ -40,8 +45,8 @@
                      <div class="invalid-feedback">location should be valid</div>
           </div>
           <!-- Hidden inputs to capture coordinates -->
-            <input type="hidden" name="listing[latitude]" value="28.6139">
-       <input type="hidden" name="listing[longitude]" value="77.2090">
+       <input type="hidden" name="listing[latitude]" value="28.61">
+       <input type="hidden" name="listing[longitude]" value="77.23">
 
             <p id="selectedLocation" class="text-muted mb-2"></p>
 
@@ -50,5 +55,4 @@
     </form>
      </div>
     </div>
-    <script src="/js/map.js"></script>
 </body>

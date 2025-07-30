@@ -1,29 +1,44 @@
-console.log("Map script Loaded");
-console.log("autocomplete location selected:",location);
-const input = document.getElementById("location");
-const apiKey = process.env.MAP_TOKEN; // replace with your key
+console.log("Geoapify Map Loaded");
 
+// Assuming you have MAP_TOKEN available (e.g., injected from EJS)
+const locationInput = document.getElementById("location");
+const latitudeInput = document.getElementById("latitude");
+const longitudeInput = document.getElementById("longitude");
+const countryInput = document.getElementById("country");
+const selectedLocation = document.getElementById("selectedLocation");
 
-const autocomplete = new GeocoderAutocomplete(input, apiKey, {
-  type: "city",
-  lang: "en",
+const autocomplete = new autocomplete.GeocoderAutocomplete(locationInput, 'YOUR_API_KEY', {
+  placeholder:"Enter a location",
+  limit:3,
+});
+// On location selection
+autocomplete.on("select", (location) => {
+  if (location && location.properties) {
+    const { lat, lon, country, formatted } = location.properties;
+
+    // Set values in form
+    latitudeInput.value = lat;
+    longitudeInput.value = lon;
+    countryInput.value = country;
+    selectedLocation.innerText = `📍 ${formatted}`;
+
+    // Update map if marker and map exist
+    if (window.previewMarker && window.map) {
+      previewMarker.setLatLng([lat, lon])
+        .setPopupContent(`📍 ${formatted}`)
+        .openPopup();
+      map.setView([lat, lon], 13);
+    }
+  }
 });
 
-autocomplete.on("select", (location) => {
-  console.log("Selected Location:", location);
-  const { lat, lon, formatted } = location.properties;
-
-  document.getElementById("latitude").value = lat;
-  document.getElementById("longitude").value = lon;
-  document.getElementById("selectedLocation").textContent = formatted;
-  console.log( "Formatted",formatted)
-
-  // ⬇️ Only update the existing marker
-  window.previewMarker.setLatLng([lat, lon])
-    .setPopupContent(`📍 ${formatted}`)
-    .openPopup();
-
-  map.setView([lat, lon], 13);
-
+// Clear coordinates when input is cleared
+input.addEventListener("input", () => {
+  if (!input.value.trim()) {
+    latitudeInput.value = "";
+    longitudeInput.value = "";
+    countryInput.value = "";
+    selectedLocation.innerText = "";
+  }
 });
 

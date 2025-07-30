@@ -1,22 +1,54 @@
-<% layout("layouts/boilerplate")%> 
-  <div id="map" ></div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Map</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <!-- Geoapify CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/@geoapify/geocoder-autocomplete@1.2.3/styles/minimal.css" />
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
+  <!-- Geoapify JS -->
+  <script src="https://unpkg.com/@geoapify/geocoder-autocomplete@1.2.3"></script>
+</head>
+<body>
+  <input id="location" type="text" placeholder="Enter a location">
+  <div id="map" style="height: 500px;"></div>
 
+<% if (listing.geometry && listing.geometry.coordinates) { %>
   <script>
     document.addEventListener("DOMContentLoaded", function () {
-      // Initialize map centered on Delhi
-      const map = L.map("map").setView([28.6139, 77.2088], 13);
+      const coordinates = JSON.parse('<%- JSON.stringify(listing.geometry.coordinates) %>')
+      console.log("Coordinates:", coordinates); // Debug log
+      
+      const lat = coordinates[1];
+      const lng = coordinates[0];
 
-      // Correct tile layer setup
-      L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        attribution:
-          '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+      if (!lat || !lng) {
+        console.error("Invalid coordinates: ", coordinates);
+        return;
+      }
+
+      const map = L.map("map").setView([lat, lng], 5);
+
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
         maxZoom: 19,
       }).addTo(map);
 
-      // Add marker
-      const marker = L.marker([28.6139, 77.2090]).addTo(map);
-      marker.bindPopup("📍 Default Marker").openPopup();
+      const marker = L.marker([lat, lng]).addTo(map);
+      marker.bindPopup(`<h5><%= listing.location %></h5><p> Exact location will be provided after booking</p>`).openPopup();
     });
   </script>
+<% } else { %>
+  <script>
+    console.error("No coordinates found for this listing.");
+  </script>
+<% } %>
+
+  <!-- Leaflet JS (always load JS at end) -->
+  <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
 </body>
 </html>
+

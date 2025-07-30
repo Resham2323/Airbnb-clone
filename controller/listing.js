@@ -1,6 +1,6 @@
 const Listing =  require("../models/listing.js");
 const ExpressError =require("../Utils/ExpressError.js");
-
+const axios = require("axios");
 
 module.exports.index = async(req, res)=> { 
     const allListings= await Listing.find({});
@@ -12,59 +12,94 @@ module.exports.newListing =  (req, res) => {
       }
 
 
-module.exports.showListing = async(req, res) => {
-          let {id} = req.params;
-          const listing = await Listing.findById(id).populate({
-            path:"reviews", populate:{
-            path:"author"
-          }
-        }).populate("owner");
-          if(!listing) {
-            req.flash("error", "Listing you requested for doesn't exist!");
-             res.redirect("/listings");
-          }
-          res.render("listings/show.ejs", { listing});
-      }
+module.exports.showListing = async (req, res) => {
+  let { id } = req.params;
+
+  const listing = await Listing.findById(id)
+    .populate({
+      path: "reviews",
+      populate: {
+        path: "author",
+      },
+    })
+    .populate("owner");
+
+  if (!listing) {
+    req.flash("error", "Listing you requested for doesn't exist!");
+    return res.redirect("/listings");
+  }
+
+  // Only assign geometry if you actually fetched geoData
+  // listing.geometry = geoData.body.features[0].geometry;
+
+  res.render("listings/show.ejs", { listing });
+};
+module.exports.showListing = async (req, res) => {
+  let { id } = req.params;
+
+  const listing = await Listing.findById(id)
+    .populate({
+      path: "reviews",
+      populate: {
+        path: "author",
+      },
+    })
+    .populate("owner");
+
+  if (!listing) {
+    req.flash("error", "Listing you requested for doesn't exist!");
+    return res.redirect("/listings");
+  }
+  // Only assign geometry if you actually fetched geoData
+  // listing.geometry = geoData.body.features[0].geometry;
+  res.render("listings/show.ejs", { listing });
+};
 
 module.exports.createListing = async (req, res, next) => {
-
-  console.log("Payload:", req.body.listing);
-  const { latitude, longitude } = req.body.listing;
-
-  // Ensure these are present
-  if (!latitude || !longitude) {
-    req.flash("error", "Coordinates missing. Please select a location.");
-    return res.redirect("/listings/new");
-  }
-
-  const lat = parseFloat(latitude);
-  const lon = parseFloat(longitude);
-
-  if (isNaN(lat) || isNaN(lon)) {
-    req.flash("error", "Invalid coordinates. Try selecting the location again.");
-    return res.redirect("/listings/new");
-  }
-
-  const newListing = new Listing(req.body.listing);
-  newListing.owner = req.user._id;
-  newListing.image = {
-    url: req.file.path,
-    filename: req.file.filename,
-  };
-  newListing.geometry = {
-    type: "Point",
-    coordinates: [lon, lat],
-  };
-
   try {
+    const { listing } = req.body;
+
+    // Step 1: Call Geoapify to get coordinates using location string
+    const geoRes = await axios.get(
+      `https://api.geoapify.com/v1/geocode/search?text=${listing.location}&apiKey=b64015e75aff4a0fa6611a0c27e86a83`
+    );
+    console.log(listing.location)
+    const feature = geoRes.data.features[0];
+
+    if (!feature) {
+      return res.status(400).send("Could not geocode the location.");
+    }
+
+    const [lon, lat] = feature.geometry.coordinates;
+
+    // Step 2: Create new listing with geometry
+    const newListing = new Listing({
+      ...listing,
+      geometry: {
+        type: "Point",
+        coordinates: [lon, lat], // GeoJSON requires [lon, lat]
+      },
+    });
+
+    // Step 3: Handle image upload
+    if (req.file) {
+      newListing.image = {
+        url: req.file.path,
+        filename: req.file.filename,
+      };
+    }
+
+    // Step 4: Set owner and save
+    newListing.owner = req.user._id;
     await newListing.save();
+
     req.flash("success", "New Listing Created");
     res.redirect("/listings");
-  } catch (e) {
-    next(e);
+  } catch (err) {
+    console.error("Listing create error:", err.message);
+    next(err);
   }
-}
-
+};
 
 
 module.exports.editListing = async(req, res) => {
@@ -82,24 +117,41 @@ module.exports.editListing = async(req, res) => {
       }
 
 
-module.exports.updateListing = async(req, res) => {
-  if(!req.body.listing) {
+module.exports.updateListing = async (req, res) => {
+  if (!req.body.listing) {
     throw new ExpressError(400, "Please send valid data for listings");
   }
-  let {id} = req.params;
-  let listing = await Listing.findByIdAndUpdate(id, {...req.body.listing}, {new: true});
 
-  // Image update only if a new file is uploaded
-  if (req.file) {
-    let url = req.file.path;
-    let filename = req.file.filename;
-    listing.image = {url, filename};
-    await listing.save();
+  const { id } = req.params;
+  let listing = await Listing.findById(id);
+
+  // Update all basic fields (title, price, location, etc.)
+  Object.assign(listing, req.body.listing);
+
+  // Step 1: Handle location update (Geoapify)
+  if (req.body.listing.location) {
+    const geoRes = await axios.get(
+      `https://api.geoapify.com/v1/geocode/search?text=${req.body.listing.location}&apiKey=b64015e75aff4a0fa6611a0c27e86a83`
+    );
+
+    const feature = geoRes.data.features[0];
+    if (feature && feature.geometry) {
+      listing.geometry = feature.geometry;
+    }
   }
+  // Step 2: Handle image update
+  if (req.file) {
+    listing.image = {
+      url: req.file.path,
+      filename: req.file.filename,
+    };
+  }
+  //  Step 3: Save changes
+  await listing.save();
 
   req.flash("success", "Listing Updated");
   res.redirect(`/listings/${id}`);
-}
+};
 
 module.exports.deleteListing = async(req, res) => {
           let {id} = req.params;
@@ -108,3 +160,4 @@ module.exports.deleteListing = async(req, res) => {
           req.flash("success", "Listing Deleted");
           res.redirect("/listings");
       }
+
