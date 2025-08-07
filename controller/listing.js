@@ -63,7 +63,6 @@ module.exports.createListing = async (req, res, next) => {
     const geoRes = await axios.get(
       `https://api.geoapify.com/v1/geocode/search?text=${listing.location}&apiKey=b64015e75aff4a0fa6611a0c27e86a83`
     );
-    console.log(listing.location)
     const feature = geoRes.data.features[0];
 
     if (!feature) {

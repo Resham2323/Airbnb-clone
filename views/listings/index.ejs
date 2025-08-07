@@ -1,16 +1,21 @@
 <% layout("layouts/boilerplate")%> 
   <style>
+.filters {
+  display: flex;
+  /* overflow-x: auto;
+  white-space: nowrap; */
+  gap: 2rem;
+  padding: 12px 16px;
+  scroll-behavior: smooth;
+}
 
-    .filters{
-     display: flex;
-    flex-wrap: wrap;
-    }
+.filters::-webkit-scrollbar {
+  /* display: none;
+} 
 
     .filter{
  text-align: center;
- margin: 1rem 0;
- margin-right: 2rem;
-
+  /* min-width: 80px; adjust as needed */
  opacity: 0.7;
 
 }
@@ -33,17 +38,23 @@
       border-radius: 1rem;
       height: 3.25rem;
       padding: 1rem;
-      margin-left: 2rem;
+      /* margin-left: 2rem; */
       display: flex;
       align-items: center;
 }
 
     .icon{
       margin-left: 1rem;
-    }
+    } 
 
-  </style>
-    <div class="filters">
+    @media (min-width: 992px) {
+  .filters {
+    justify-content: center;
+    overflow-x: hidden;
+  } 
+}
+ </style>
+<div class="filters">
       <div class="filter">
         <div><i class="fa-solid fa-fire"></i></div>
         <p>Trending</p>
@@ -88,18 +99,13 @@
         <div><i class="fa-solid fa-ship"></i></div>
         <p>Boat</p>
       </div>
-        <div class="filter">
-      <div><i class="fa-solid fa-igloo"></i></div>
-        <p>Domes!</p>
-      </div> 
+       
       <div class="tax-toggle">
       <div class="form-check-reverse form-switch ">
   <input class="form-check-input" type="checkbox" role="switch" id="switchCheckDefault">
   <label class="form-check-label" for="switchCheckDefault">Display after toatal taxes</label>
 </div> 
-</div>
-
-    </div>
+</div> </div>
 
 <div class="row row-cols-lg-3 row-cols-md-2 row-cols-sm-1">
      <%for(let listing of allListings) {%>
