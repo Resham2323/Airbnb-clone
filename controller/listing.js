@@ -10,30 +10,6 @@ module.exports.index = async(req, res)=> {
 module.exports.newListing =  (req, res) => {
           res.render("listings/new.ejs");
       }
-
-
-module.exports.showListing = async (req, res) => {
-  let { id } = req.params;
-
-  const listing = await Listing.findById(id)
-    .populate({
-      path: "reviews",
-      populate: {
-        path: "author",
-      },
-    })
-    .populate("owner");
-
-  if (!listing) {
-    req.flash("error", "Listing you requested for doesn't exist!");
-    return res.redirect("/listings");
-  }
-
-  // Only assign geometry if you actually fetched geoData
-  // listing.geometry = geoData.body.features[0].geometry;
-
-  res.render("listings/show.ejs", { listing });
-};
 module.exports.showListing = async (req, res) => {
   let { id } = req.params;
 
